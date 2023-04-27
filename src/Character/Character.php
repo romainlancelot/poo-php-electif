@@ -9,7 +9,7 @@ use Eliot\Weapon\Weapon;
 use Eliot\Elements\Element;
 use Eliot\Spell\Spell;
 use Eliot\Buff\Buff;
-require_once "functions.php";
+
 abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
 {
     use HasWeapon;
@@ -68,6 +68,11 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
         return $this->attackDamages;
     }
 
+    public function getAttack(): float
+    {
+        return $this->attackDamages;
+    }
+
     public function getMagicDamages(): float
     {
         if ($this->hasWeapon()) {
@@ -76,7 +81,17 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
         return $this->magicDamages;
     }
 
+    public function getMagic(): float
+    {
+        return $this->magicDamages;
+    }
+
     public function getDefenseRatio(): float
+    {
+        return $this->defenseRatio;
+    }
+
+    public function getDefense(): float
     {
         return $this->defenseRatio;
     }
@@ -96,7 +111,8 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
     {
         $damages = $this->takesPhysicalDamagesFrom($character) + $this->takesMagicalDamagesFrom($character);
         $this->setHealth(
-            $this->getHealth() - (int)($damages * Character::getElementRatio($character->getElement(), $this->getElement()))
+            $this->getHealth() - (int)($damages * ($this->getDefenseRatio()) *
+                Character::getElementRatio($character->getElement(), $this->getElement()))
         );
     }
 
@@ -127,6 +143,21 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
 
     public function pushBuff(Buff $b) {
         $buffs[] = $b;
+    }
+
+    function displayCharacters():void {
+        system('clear');
+        $count = count( $this->myTeam);
+        if ($count == 0) {
+            echo "You have no character.";
+        }
+        else {
+            for ($i = 0; $i < $count; $i++) {
+                echo ($i + 1)." ".$this->myTeam[$i]."\n";
+                $this->myTeam[$i]->display();
+            }
+        }
+        readline();
     }
 
 
