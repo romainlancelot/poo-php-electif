@@ -78,8 +78,28 @@ class Combat {
             $attackee = $queue[$key];
 
             if ($this->chance(25)) {
-                $weaponKey = array_rand($this->weapons);
-                $attacker->takesWeapon($this->weapons[$weaponKey]);
+                echo "Coup de chance ! {$attacker} trouve une arme par terre !" . PHP_EOL;
+                if (in_array($attacker, $this->myTeam)) {
+                    for ($i = 0; $i < count($this->weapons); $i++) {
+                        echo $i . " - " . $this->weapons[$i] . PHP_EOL;
+                    }
+                    echo "Choose your weapon : ";
+                    do {
+                        $weaponKey = (int) readline();
+                        if (!isset($this->weapons[$weaponKey])) {
+                            echo "Invalid weapon, choose again : ";
+                        }
+                    } while (!isset($this->weapons[$weaponKey]));
+                    $attacker->takesWeapon($this->weapons[$weaponKey]);
+                } else {
+                    $weaponKey = array_rand($this->weapons);
+                }
+            }
+
+            if (in_array($attacker, $this->myTeam)) {
+                echo "Member of my team attacks !".PHP_EOL;
+            } else {
+                echo "Member of enemy team attacks !".PHP_EOL;
             }
             $attacker->attacks($attackee);
             $attacker->dropsWeapon();
@@ -87,13 +107,15 @@ class Combat {
             if ($attackee->isDead()) {
                 unset($queue[$key]);
                 echo "{$attackee} est mort".PHP_EOL;
-                echo PHP_EOL;
                 array_unshift($queue, $attacker);
                 shuffle($queue);
+                if (count($queue) != 1) {
+                    echo "Il reste ".count($queue)." joueurs".PHP_EOL.PHP_EOL;
+                }
                 continue;
             }
 
-            echo "{$attackee} a {$attackee->getHealth()} points de vie".PHP_EOL;
+            echo "{$attackee} a {$attackee->getHealth()} points de vie".PHP_EOL.PHP_EOL;;
             echo PHP_EOL;
             array_unshift($queue, $attacker);
             shuffle($queue);

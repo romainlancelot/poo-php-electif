@@ -98,11 +98,11 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
 
     public function attacks(Character $character)
     {
-        // echo "{$this} attaque {$character}";
+        echo "{$this} attaque {$character}";
         if ($this->hasWeapon()) {
-        //     echo " avec {$this->weapon}";
+            echo " avec {$this->weapon}";
         }
-        // echo " !".PHP_EOL;
+        echo " !".PHP_EOL;
 
         $character->takesDamagesFrom($this);
     }
@@ -110,6 +110,7 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
     public function takesDamagesFrom(Character $character)
     {
         $damages = $this->takesPhysicalDamagesFrom($character) + $this->takesMagicalDamagesFrom($character);
+        echo "{$this} subit {$damages} dégâts !".PHP_EOL;
         $this->setHealth(
             $this->getHealth() - (int)($damages * ($this->getDefenseRatio()) *
                 Character::getElementRatio($character->getElement(), $this->getElement()))
