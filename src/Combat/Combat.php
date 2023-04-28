@@ -5,6 +5,9 @@ use Eliot\Character\Character;
 use Eliot\Weapon\PhysicalWeapon;
 use Eliot\Weapon\MagicWeapon;
 use Eliot\Weapon\Weapon;
+use Eliot\Spells\Spell;
+use Eliot\Spells\SpellKind;
+// use Eliot\Buff\Buff;
 
 class Combat {
 
@@ -97,13 +100,41 @@ class Combat {
                 }
             }
 
-            if (in_array($attacker, $this->myTeam)) {
+            if (in_array($attacker, $this->myTeam) && count($attacker->getSpells()) > 0) {
                 echo "Member of my team attacks !".PHP_EOL;
+                echo "Do you want use a spell ? (y/n) ";
+                $spell = readline();
+                if ($spell == "y") {
+                    foreach ($attacker->getSpells() as $k=>$s) {
+                        echo $k . " - " . $s->getName() . " (" . $s->getManaCost() . " mana cost)" . PHP_EOL;
+                    }
+                    echo "Choose your spell ({$attacker->getMana()} mana left) : ";
+                    do {
+                        $spellKey = (int) readline();
+                        if (!isset($attackee->getSpells()[$spellKey])) {
+                            echo "Invalid spell, choose again ('q' to cancel) : ";
+                        } 
+                        if (isset($attacker->getSpells()[$spellKey]) && $attacker->getMana() < $attacker->getSpells()[$spellKey]->getManaCost()) {
+                            echo "Not enough mana, choose again ('q' to cancel) : ";
+                        }
+                        if ($spellKey == "q") {
+                            $attacker->attacks($attackee);
+                            $attacker->dropsWeapon();
+                            break;
+                        }
+                    } while (!isset($attacker->getSpells()[$spellKey]));
+                    $attacker->getSpells()[$spellKey]->cast($attacker, $attackee);
+                    $attacker->removeMana($attacker->getSpells()[$spellKey]->getManaCost());
+                    unset($attacker->getSpells()[$spellKey]);
+                } else {
+                    $attacker->attacks($attackee);
+                    $attacker->dropsWeapon();
+                }
             } else {
                 echo "Member of enemy team attacks !".PHP_EOL;
+                $attacker->attacks($attackee);
+                $attacker->dropsWeapon();
             }
-            $attacker->attacks($attackee);
-            $attacker->dropsWeapon();
 
             if ($attackee->isDead()) {
                 unset($queue[$key]);

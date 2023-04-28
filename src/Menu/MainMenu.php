@@ -7,6 +7,8 @@ use Eliot\Character\Soldier;
 use Eliot\Character\Wizard;
 use Eliot\Elements\Element;
 use Eliot\Combat\Combat;
+use Eliot\Spells\Spell;
+use Eliot\Spells\SpellKind;
 
 class MainMenu {
 
@@ -73,6 +75,7 @@ class MainMenu {
         else {
             for ($i = 0; $i < $count; $i++) {
                 echo ($i + 1)." ".$this->myTeam[$i]."\n";
+                $this->myTeam[$i]->display();
             }
         }
         readline();
@@ -81,9 +84,19 @@ class MainMenu {
     function randomCharacter() {
         $random = random_int(0, 2);
         $element = [Element::Fire, Element::Plant, Element::Water];
-        $spells = [];
         $random_el = random_int(0, 2);
         $element = $element[$random_el];
+        $spells =[
+            new Spell("Fireball", "A fireball that burns your enemy", random_int(20,50), random_int(10,30), random_int(1,5), random_int(1,5), SpellKind::Attack),
+            new Spell("Ice Shard", "A shard of ice that freezes your enemy", random_int(20,50), random_int(10,30), random_int(1,5), random_int(1,5), SpellKind::Attack),
+            new Spell("Lightning", "A lightning that strikes your enemy", random_int(20,50), random_int(10,30), random_int(1,5), random_int(1,5), SpellKind::Attack),
+            new Spell("Smash", "Smash your enemy", random_int(20,50), random_int(10,30), random_int(1,5), random_int(1,5), SpellKind::Attack),
+        
+            new Spell("Heal", "Heal your ally", random_int(20,50), random_int(10,30), random_int(1,5), random_int(1,5), SpellKind::Heal),
+            new Spell("Prince Charmant", "Charm your enemy", random_int(20,50), random_int(10,30), random_int(1,5), random_int(1,5), SpellKind::Heal),
+        
+            // new Spell("Shield", "Protect your ally", 10, 20, 3, 3, SpellKind::Defense),
+        ];
         $random_stats = (float)random_int(0, 10);
         $c = null;
         switch ($random) {

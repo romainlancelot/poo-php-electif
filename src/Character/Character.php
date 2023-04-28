@@ -25,7 +25,8 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
         protected int $attackDamages,
         protected int $magicDamages,
         protected Element $element,
-        protected Array $spells
+        protected Array $spells,
+        protected int $mana=100
     ) {}
 
     public function getHealth(): float
@@ -52,6 +53,7 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
     }
 
     public function heal(int $value): void {
+        echo "{$this} se soigne de {$value} points de vie !".PHP_EOL;
         $this->health += $value;
     }
 
@@ -96,6 +98,21 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
         return $this->defenseRatio;
     }
 
+    public function getSpells(): array
+    {
+        return $this->spells;
+    }
+
+    public function getMana(): int
+    {
+        return $this->mana;
+    }
+
+    public function removeMana(int $value): void
+    {
+        $this->mana -= $value;
+    }
+
     public function attacks(Character $character)
     {
         echo "{$this} attaque {$character}";
@@ -117,9 +134,12 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
         );
     }
 
-    public function takesDamagesFromSpell(Character $character, int $amount){
+    public function takesDamagesFromSpell(Character $character, int $damages, string $name){
+        echo "{$this} subit {$damages} dégâts par le sort {$name} !".PHP_EOL;
         $this->setHealth(
-            $this->getHealth() - $amount);
+            $this->getHealth() - (int)($damages * ($this->getDefenseRatio()) *
+                Character::getElementRatio($character->getElement(), $this->getElement()))
+        );
     }
 
     protected function takesPhysicalDamagesFrom(Character $character)
@@ -146,19 +166,12 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
         $buffs[] = $b;
     }
 
-    function displayCharacters():void {
-        system('clear');
-        $count = count( $this->myTeam);
-        if ($count == 0) {
-            echo "You have no character.";
-        }
-        else {
-            for ($i = 0; $i < $count; $i++) {
-                echo ($i + 1)." ".$this->myTeam[$i]."\n";
-                $this->myTeam[$i]->display();
-            }
-        }
-        readline();
+    public function display() : void {
+        echo("Health : ".$this->getHealth()."\n");
+        echo("Defense Ratio : ".$this->getDefense()."\n");
+        echo("Attack Damage : ".$this->getAttack()."\n");
+        echo("Magic Damage : ".$this->getMagic()."\n");
+        //echo("Element : ".$this->getElement()."\n");
     }
 
 
