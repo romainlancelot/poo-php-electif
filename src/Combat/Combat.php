@@ -80,25 +80,7 @@ class Combat {
             $attacker = array_shift($queue);
             $key = array_rand($queue);
             $attackee = $queue[$key];
-
-            if ($this->chance(25)) {
-                echo "Coup de chance ! {$attacker} trouve une arme par terre !" . PHP_EOL;
-                if (in_array($attacker, $this->myTeam)) {
-                    for ($i = 0; $i < count($this->weapons); $i++) {
-                        echo $i . " - " . $this->weapons[$i] . PHP_EOL;
-                    }
-                    echo "Choose your weapon : ";
-                    do {
-                        $weaponKey = (int) readline();
-                        if (!isset($this->weapons[$weaponKey])) {
-                            echo "Invalid weapon, choose again : ";
-                        }
-                    } while (!isset($this->weapons[$weaponKey]));
-                    $attacker->takesWeapon($this->weapons[$weaponKey]);
-                } else {
-                    $weaponKey = array_rand($this->weapons);
-                }
-            }
+            $health_start = $attackee->getHealth();
 
             if (in_array($attacker, $this->myTeam) && count($attacker->getSpells()) > 0) {
                 echo "Member of my team attacks !".PHP_EOL;
@@ -118,24 +100,43 @@ class Combat {
                             echo "Not enough mana, choose again ('q' to cancel) : ";
                         }
                         if ($spellKey == "q") {
-                            $attacker->attacks($attackee);
-                            $attacker->dropsWeapon();
+                            $q = True;
                             break;
                         }
                     } while (!isset($attacker->getSpells()[$spellKey]));
+                    if (isset($q) && $q) { continue; }
                     $attacker->getSpells()[$spellKey]->cast($attacker, $attackee);
                     $attacker->removeMana($attacker->getSpells()[$spellKey]->getManaCost());
                     unset($attacker->getSpells()[$spellKey]);
                 } else {
-                    $attacker->attacks($attackee);
-                    $attacker->dropsWeapon();
+
                 }
-            } else {
+            } elseif (in_array($attacker, $this->enemyTeam)) {
                 echo "Member of enemy team attacks !".PHP_EOL;
-                $attacker->attacks($attackee);
-                $attacker->dropsWeapon();
+            }
+            
+            if ($this->chance(25)) {
+                echo "Coup de chance ! {$attacker} trouve une arme par terre !" . PHP_EOL;
+                if (in_array($attacker, $this->myTeam)) {
+                    for ($i = 0; $i < count($this->weapons); $i++) {
+                        echo $i . " - " . $this->weapons[$i] . PHP_EOL;
+                    }
+                    echo "Choose your weapon : ";
+                    do {
+                        $weaponKey = (int) readline();
+                        if (!isset($this->weapons[$weaponKey])) {
+                            echo "Invalid weapon, choose again : ";
+                        }
+                    } while (!isset($this->weapons[$weaponKey]));
+                    $attacker->takesWeapon($this->weapons[$weaponKey]);
+                } else {
+                    $weaponKey = array_rand($this->weapons);
+                }
             }
 
+            $attacker->attacks($attackee);
+            $attacker->dropsWeapon();
+            
             if ($attackee->isDead()) {
                 unset($queue[$key]);
                 echo "{$attackee} est mort".PHP_EOL;
@@ -147,7 +148,7 @@ class Combat {
                 continue;
             }
 
-            echo "{$attackee} a {$attackee->getHealth()} points de vie".PHP_EOL.PHP_EOL;;
+            echo "{$attackee} a {$health_start} -> {$attackee->getHealth()} points de vie".PHP_EOL.PHP_EOL;;
             echo PHP_EOL;
             array_unshift($queue, $attacker);
             shuffle($queue);
