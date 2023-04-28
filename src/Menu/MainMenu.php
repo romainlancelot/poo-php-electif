@@ -103,7 +103,7 @@ class MainMenu {
             case 0:
                 $c = new Archer(
                     300 + $random_stats * 10,
-                    $random_stats * 1,
+                    1 + $random_stats * 0.1,
                     50 + $random_stats,
                     0,
                     $element,
@@ -113,7 +113,7 @@ class MainMenu {
             case 1:
                 $c = new Soldier(
                     410 + $random_stats * 12,
-                    $random_stats * 2,
+                    1 + $random_stats * 0.1,
                     70 + $random_stats,
                     0,
                     $element,
@@ -123,7 +123,7 @@ class MainMenu {
             case 2:
                 $c = new Wizard(
                     280 + $random_stats * 2,
-                    $random_stats,
+                    1 + $random_stats * 0.1,
                     0,
                     $random_stats * 10,
                     $element,
@@ -151,10 +151,15 @@ class MainMenu {
             readline();
             return;
         }
-        $enemyTeam = [$this->randomCharacter(), $this->randomCharacter(), $this->randomCharacter()];
+        $enemyTeam = [];
 
+        for($i = 0; $i < count($this->myTeam); $i++) {
+            $enemyTeam[] = $this->randomCharacter();
+        }
+       
         $cbt = new Combat($this->myTeam, $enemyTeam);
-        $cbt->start();
+        $outcome = $cbt->start();
+        $this->myGold += $outcome ? 100 : 50;
         readline();
     }
 }

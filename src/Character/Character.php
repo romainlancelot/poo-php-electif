@@ -19,6 +19,9 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
     protected int $exp = 0;
     protected int $level = 1;
 
+    protected int $baseHealth;
+    protected int $baseMana;
+
     public function __construct(
         protected float $health,
         protected float $defenseRatio,
@@ -27,7 +30,16 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
         protected Element $element,
         protected Array $spells,
         protected int $mana=100
-    ) {}
+    ) {
+        $this->baseHealth = $health;
+        $this->baseMana = $mana;
+    }
+
+    public function resetHealth(): void
+    {
+        $this->health = $this->baseHealth;
+        $this->mana = $this->baseMana;
+    }
 
     public function getHealth(): float
     {
@@ -127,18 +139,20 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
     public function takesDamagesFrom(Character $character)
     {
         $damages = $this->takesPhysicalDamagesFrom($character) + $this->takesMagicalDamagesFrom($character);
+        $damages = (int)($damages * ($this->getDefenseRatio()) *
+            Character::getElementRatio($character->getElement(), $this->getElement()));
         echo "{$this} subit {$damages} dégâts !".PHP_EOL;
         $this->setHealth(
-            $this->getHealth() - (int)($damages * ($this->getDefenseRatio()) *
-                Character::getElementRatio($character->getElement(), $this->getElement()))
+            $this->getHealth() - $damages 
         );
     }
 
     public function takesDamagesFromSpell(Character $character, int $damages, string $name){
+        $damages = (int)($damages * ($this->getDefenseRatio()) *
+        Character::getElementRatio($character->getElement(), $this->getElement()));
         echo "{$this} subit {$damages} dégâts par le sort {$name} !".PHP_EOL;
         $this->setHealth(
-            $this->getHealth() - (int)($damages * ($this->getDefenseRatio()) *
-                Character::getElementRatio($character->getElement(), $this->getElement()))
+            $this->getHealth() - $damages
         );
     }
 

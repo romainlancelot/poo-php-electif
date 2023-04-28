@@ -155,6 +155,11 @@ class Combat {
         }
 
         $winner = array_pop($queue);
+
+        for($i = 0; $i < count($this->myTeam); $i++) {
+            $this->myTeam[$i]->resetHealth();
+        }
+
         return in_array($winner, $this->myTeam);
     }
 
