@@ -5,6 +5,7 @@ namespace Eliot\Menu;
 use Eliot\Character\Archer;
 use Eliot\Character\Soldier;
 use Eliot\Character\Wizard;
+use Eliot\Character\Rogue;
 use Eliot\Elements\Element;
 use Eliot\Combat\Combat;
 use Eliot\Spells\Spell;
@@ -82,7 +83,7 @@ class MainMenu {
     }
 
     function randomCharacter() {
-        $random = random_int(0, 2);
+        $random = random_int(0, 3);
         $element = [Element::Fire, Element::Plant, Element::Water];
         $random_el = random_int(0, 2);
         $element = $element[$random_el];
@@ -122,10 +123,20 @@ class MainMenu {
                 break;
             case 2:
                 $c = new Wizard(
-                    280 + $random_stats * 2,
+                    280 + $random_stats * 11,
                     1 + $random_stats * 0.1,
                     0,
                     $random_stats * 10,
+                    $element,
+                    $spells
+                );
+                break;
+            case 3:
+                $c = new Rogue(
+                    250 + $random_stats * 11,
+                    1 + $random_stats * 0.3,
+                    80 + $random_stats,
+                    0,
                     $element,
                     $spells
                 );
