@@ -166,12 +166,25 @@ abstract class Character implements DealsPhysicalDamages, DealsMagicDamages
         $buffs[] = $b;
     }
 
+    function elementToString($element) {
+        switch ($element){
+            case (Element::Fire):
+                return "Fire";
+            case (Element::Water):
+                return "Water";
+            case (Element::Plant):
+                return "Plant";
+            default:
+                return "neutre";
+        }
+    }
+
     public function display() : void {
         echo("Health : ".$this->getHealth()."\n");
         echo("Defense Ratio : ".$this->getDefense()."\n");
         echo("Attack Damage : ".$this->getAttack()."\n");
         echo("Magic Damage : ".$this->getMagic()."\n");
-        //echo("Element : ".$this->getElement()."\n");
+        echo("Element : ".$this->elementToString($this->element)."\n");
     }
 
 
